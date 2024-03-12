@@ -3,13 +3,13 @@ CHCP 65001
 setlocal
 
 
-:: 设置需要同步的本地仓库路径
+echo 设置需要同步的本地仓库路径
 set REPO_PATH=../
 
-:: 切换到仓库目录
+echo 切换到仓库目录
 cd /d %REPO_PATH%
 
-:: 设置 PortableGit 的路径
+echo 设置 PortableGit 的路径
 set GIT_PATH=PortableGit/bin
 
 echo 更新所有子模块
@@ -17,7 +17,7 @@ echo 更新所有子模块
 
 echo 执行 git pull 更新本地仓库
 "%GIT_PATH%\git.exe" stash
-"%GIT_PATH%\git.exe" pull https://github.com/X-T-E-R/GPT-SoVITS-Inference.git main
+"%GIT_PATH%\git.exe" pull https://gitee.com/xxoy/GPT-SoVITS-Inference.git main
 
 echo.
 echo 更新完成！
