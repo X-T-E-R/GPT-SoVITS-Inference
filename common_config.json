@@ -8,7 +8,7 @@
       "choices": ["en_US", "zh_CN", "zh_TW"]
     },
     "server_port": {
-      "default": 9872,
+      "default": 5000,
       "description": "Port number for the application, -1 for auto select",
       "label": "服务端口",
       "type": "integer"

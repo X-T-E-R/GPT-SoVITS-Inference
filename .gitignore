@@ -18,4 +18,4 @@ ffprobe.exe
 tmp_audio
 trained*
 history
-inference.log
+app.log

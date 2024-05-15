@@ -1,8 +1,0 @@
-Running on local URL:  http://127.0.0.1:9870
-
-To create a public link, set `share=True` in `launch()`.
-IMPORTANT: You are using gradio version 3.41.2, however version 4.29.0 is available, please upgrade.
---------
-扫描模型文件夹:trained
-找到的角色列表:['sunhongshan_meeting_e16', 'sunhongshan_meeting', '三月七']
-Keyboard interruption in main thread... closing server.
