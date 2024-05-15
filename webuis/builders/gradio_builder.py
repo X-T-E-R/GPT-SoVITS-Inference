@@ -17,7 +17,7 @@ class GradioTabBuilder:
         gradio_input_dict (Dict[str, Any]): A dictionary of Gradio inputs.
 
     Methods:
-        __init__(self, component_name_list: List[str|List[str]], params_config: Dict[str, ParamItem]): Initializes the GradioTabBuilder object.
+        __init__(self, component_name_list: List[Union[str, List[str]]], params_config: Dict[str, ParamItem]): Initializes the GradioTabBuilder object.
         add_input(self, name: str, input: Any): Adds an input to the gradio_input_dict.
         build_group(self, component_list: List[ParamItem]): Builds a group of components.
         build(self): Builds the Gradio tab and returns the gradio_input_dict.
@@ -25,12 +25,12 @@ class GradioTabBuilder:
 
     component_group_list: List[List[ParamItem]]
     gradio_input_dict: Dict[str, Any]
-    def __init__(self, component_name_list: List[str|List[str]], params_config: Dict[str, ParamItem]):
+    def __init__(self, component_name_list: List[Union[str, List[str]]], params_config: Dict[str, ParamItem]):
         """
         Initializes the GradioTabBuilder object.
 
         Args:
-            component_name_list (List[str|List[str]]): A list of component names or groups of component names.
+            component_name_list (List[Union[str, List[str]]]): A list of component names or groups of component names.
             params_config (Dict[str, ParamItem]): A dictionary of parameter configurations.
         """
         self.component_group_list = []
@@ -106,12 +106,12 @@ def emit_on_change(*data):
     """
     pass    
 
-def register_on_change(component_name_list: List[str|List[str]], all_gradio_components: Dict[str, Any]):
+def register_on_change(component_name_list: List[Union[str, List[str]]], all_gradio_components: Dict[str, Any]):
     """
     Registers an on_change function for the Gradio inputs.
 
     Args:
-        component_name_list (List[str|List[str]]): A list of component names or groups of component names.
+        component_name_list (List[Union[str, List[str]]]): A list of component names or groups of component names.
         gradio_input_dict (Dict[str, Any]): The Gradio input dictionary.
         on_change (Optional[Callable[[Dict[str, Any]], None]]): The on_change function to register.
     """

@@ -16,3 +16,6 @@ cache
 ffmpeg.exe
 ffprobe.exe
 tmp_audio
+trained*
+history
+app.log
