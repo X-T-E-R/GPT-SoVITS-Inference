@@ -98,6 +98,9 @@ class GSV_Synthesizer(Base_TTS_Synthesizer):
 
     def get_characters(self) -> dict:
         characters_and_emotions = {}
+        # self.models_path = os.environ.get('models_path', 'trained')
+        self.models_path = self.ui_config.get('models_path', 'trained')
+        print(f"get_characters trained模型地址: {os.environ.get('models_path', 'trained')}")
 
         # 遍历模型路径下的所有文件夹
         for character_subdir in os.listdir(self.models_path):

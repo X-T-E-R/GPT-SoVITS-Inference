@@ -1,13 +1,14 @@
 {
   "app_config": {
     "locale": {
-      "default": "auto",
+      "default": "zh_CN",
       "description": "Locale settings for the application",
       "label": "语言",
-      "type": "string"
+      "type": "string",
+      "choices": ["en_US", "zh_CN", "zh_TW"]
     },
     "server_port": {
-      "default": 5000,
+      "default": 9872,
       "description": "Port number for the application, -1 for auto select",
       "label": "服务端口",
       "type": "integer"

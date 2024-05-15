@@ -1,5 +1,6 @@
 import gradio as gr
 import os, json
+import re
 
 # 在开头加入路径
 import os, sys
@@ -40,18 +41,17 @@ if os.path.exists(config_path):
         
 from tools.i18n.i18n import I18nAuto
 
-
-i18n = I18nAuto(None, os.path.join(os.path.dirname(__file__), "i18n/locale"))
+i18n_dir = os.path.join(os.path.dirname(__file__), "i18n/locale")
+i18n = I18nAuto(i18n_dir)
 
 # 微软提供的SSML情感表
 emotional_styles = [
     "default",
-    "advertisement_upbeat", "affectionate", "angry", "assistant", "calm", "chat", "cheerful", 
+    "affectionate", "angry", "assistant", "calm", "chat", "cheerful", 
     "customerservice", "depressed", "disgruntled", "documentary-narration", "embarrassed", 
     "empathetic", "envious", "excited", "fearful", "friendly", "gentle", "hopeful", "lyrical", 
-    "narration-professional", "narration-relaxed", "newscast", "newscast-casual", "newscast-formal", 
-    "poetry-reading", "sad", "serious", "shouting", "sports_commentary", "sports_commentary_excited", 
-    "whispering", "terrified", "unfriendly"
+    "narration", "newscast", "poetry-reading", "sad", "serious", "shouting",
+    "surprised", "whispering", "terrified", "unfriendly", "apologetic"
 ]
 
 language_list = ["auto", "zh", "en", "ja", "all_zh", "all_ja"]
@@ -108,7 +108,9 @@ def split_file_name(file_name):
         base_name=file_name
   
     final_name = os.path.splitext(base_name)[0]
-    return final_name
+    pattern = r"【.*?】"
+    
+    return re.sub(pattern, "", final_name).replace('说话-', '')
 
 
 def clear_infer_config():
@@ -122,18 +124,37 @@ def clear_infer_config():
 
 clear_infer_config()
 
-def read_json_from_file(character_dropdown,models_path  ):
+def read_json_from_file(character_dropdown,models_path):
     state['edited_character_name'] = character_dropdown  
     state['models_path']=models_path 
     state['edited_character_path'] = os.path.join(state['models_path'], state['edited_character_name'])
     state['ckpt_file_found'], state['pth_file_found'], state['wav_file_found'] = scan_files(state['edited_character_path'])
-    print(i18n("当前人物变更为: ")+state['edited_character_name'])
+    gr.Info(i18n(f"当前人物变更为: {state['edited_character_name']}"))
+    print(i18n(f"当前人物变更为: {state['edited_character_name']}"))
     clear_infer_config()
     json_path = os.path.join(state['edited_character_path'], "infer_config.json")
     # 从json文件中读取数据
+    if not os.path.exists(json_path):
+        auto_generate_json(character_dropdown, models_path)
+        save_json()
+    
     with open(json_path, "r", encoding='utf-8') as f:
         data = json.load(f)
+
+        # 不符合要求则重新生成：
+        if 'ref_wav_path' not in data['emotion_list']['default']:
+            auto_generate_json(character_dropdown, models_path)
+            save_json()
+            with open(json_path, "r", encoding='utf-8') as f:
+                data = json.load(f)
+
         return load_json_to_state(data)
+
+
+
+def auto_generate_all_json(models_path):
+    for subfolder in state['character_list']:
+        read_json_from_file(subfolder, models_path)
 
 
 def save_json():
@@ -181,6 +202,8 @@ def scan_files(character_path):
                 pth_file_found.append(rev_path)
             elif file.lower().endswith(".wav"):
                 wav_file_found.append(rev_path)
+            elif file.lower().endswith(".mp3"):
+                wav_file_found.append(rev_path)
             
     return ckpt_file_found, pth_file_found, wav_file_found
 
@@ -189,6 +212,7 @@ def auto_generate_json(character_dropdown, models_path):
     state['edited_character_name'] = character_dropdown  
     state['models_path'] = models_path 
     state['edited_character_path'] = os.path.join(state['models_path'], state['edited_character_name'])
+    
     print(i18n(f"当前人物变更为: {state['edited_character_name']}"))
     clear_infer_config()
     character_path = state['edited_character_path']
@@ -277,9 +301,9 @@ def run_as_tab(app: gr.Blocks):
         # 创建角色列表的下拉菜单，初始为空
         character_dropdown = gr.Dropdown([], label=i18n("选择角色"), scale=3)
         # 创建从json中读取按钮并设置点击事件
-        read_info_from_json_button = gr.Button(i18n("从json中读取"), size="lg", scale=2, variant="secondary")
+        read_info_from_json_button = gr.Button(i18n("从json中读取（无则生成）"), size="lg", scale=2, variant="secondary")
         # 创建自动生成json的按钮并设置点击事件
-        auto_generate_info_button = gr.Button(i18n("自动生成info"), size="lg", scale=2, variant="primary")
+        auto_generate_info_button = gr.Button(i18n("生成所有info（有则跳过）"), size="lg", scale=2, variant="primary")
         
         scan_button.click(scan_subfolder, inputs=[models_path], outputs=[character_dropdown])
     
@@ -330,9 +354,9 @@ def run_as_tab(app: gr.Blocks):
 
     add_emotion_button.click(add_emotion, outputs=column_items)
     read_info_from_json_button.click(read_json_from_file, inputs=[character_dropdown,models_path] , outputs=column_items)
-    auto_generate_info_button.click(auto_generate_json, inputs=[character_dropdown,models_path], outputs=column_items)
+    auto_generate_info_button.click(auto_generate_all_json, inputs=[models_path])
     
 if __name__ == '__main__':
     with gr.Blocks() as app:
         run_as_tab(app)
-    app.launch(server_port=9868, inbrowser=True, share=False)
+    app.launch(server_port=9870, inbrowser=True, share=False)
