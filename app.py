@@ -689,13 +689,13 @@ def filter_records(records, user_ip, time, model_folder, character, emotion, tex
             continue
         if time and time not in record["time"]:
             continue
-        if model_folder and model_folder not in record["config"]["trained_dir"]:
+        if model_folder and model_folder not in record["model_folder"]:
             continue
-        if character and character not in record["config"]["character"]:
+        if character and character not in record["character"]:
             continue
-        if emotion and emotion not in record["config"]["emotion"]:
+        if emotion and emotion not in record["emotion"]:
             continue
-        if text and text not in record["config"]["text"]:
+        if text and text not in record["text_snippet"]:
             continue
         filtered.append(record)
     return filtered
