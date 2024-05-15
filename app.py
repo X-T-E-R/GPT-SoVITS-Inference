@@ -5,6 +5,7 @@ import requests
 import numpy as np
 from string import Template
 import wave, io
+import re
 
 # 在开头加入路径
 import os, sys
